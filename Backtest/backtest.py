@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pandas_ta as ta
-
+from xgboost import XGBRegressor
 
 class Status():
     def __init__(self):
@@ -54,19 +54,23 @@ def addShiftedColumns(df: pd.DataFrame, xf: pd.DataFrame, columns: list, shift_l
             xf[colname] = df[column].shift(i)
     return shifted_column_names
 
-
-def evaluateBarForTrade(df: pd.DataFrame):
+def calcTransformedLastBar(df:pd.DataFrame):
     xf = pd.DataFrame()
     xf["hwap"] = ta.hma(df.wap)
     shifted_hlc_columns = addShiftedColumns(df, xf, ['high', 'low', 'close'])
     for col in shifted_hlc_columns:
         xf[col + 'h'] = 1000 * (xf[col] / xf['hwap'] - 1)
-    xf.drop(shifted_hlc_columns, axis=1, inplace=True)
-    return xf.iloc[-1]
+    xf.drop(shifted_hlc_columns, axis=1, inplace=True) 
+    xf.drop('hwap', axis=1, inplace=True)  
+    return xf.iloc[[-1]]
 
 
 def main():
+    xgb = XGBRegressor()
+    xgb.load_model('Fit/xxx.json')
+    
     status = Status()
+    
     for index, row in pd.read_csv("/Users/ljp2/Alpaca/Data/bars1/20211008.csv").iterrows():
         if index == 0:
             df = row.to_frame().T
@@ -76,7 +80,10 @@ def main():
         if index < 45: continue
 
         if status.position == 0:
-            xf = evaluateBarForTrade(df)
+            bar = calcTransformedLastBar(df).astype(float)
+            phigh = xgb.predict(bar)
+            print(phigh)
+            pass
 
         else:
             evaluatePosition(status.position)
