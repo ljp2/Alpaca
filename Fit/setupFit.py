@@ -26,7 +26,7 @@ def removeOutliers(df):
 
 def calcXy(df: pd.DataFrame, col: str) -> object:
     xf = removeOutliers(df)
-    y = xf['high+5c']
+    y = xf[col]
     X = xf.drop(['hwap', 'high+5c', 'low+5c'], axis=1)
     return X,y
 

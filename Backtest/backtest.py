@@ -66,8 +66,10 @@ def calcTransformedLastBar(df:pd.DataFrame):
 
 
 def main():
-    xgb = XGBRegressor()
-    xgb.load_model('Fit/xxx.json')
+    xgbH = XGBRegressor()
+    xgbH.load_model('Fit/xgbH.json')
+    xgbL = XGBRegressor()
+    xgbL.load_model('Fit/xgbL.json')
     
     status = Status()
     
@@ -81,8 +83,9 @@ def main():
 
         if status.position == 0:
             bar = calcTransformedLastBar(df).astype(float)
-            phigh = xgb.predict(bar)
-            print(phigh)
+            phigh = xgbH.predict(bar)
+            plow = xgbL.predict(bar)
+            print(phigh, plow)
             pass
 
         else:
