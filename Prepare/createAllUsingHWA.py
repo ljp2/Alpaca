@@ -100,7 +100,7 @@ filelist = os.listdir(BARS1_DIRECTORY)
 filelist.sort(reverse=True)
 
 firstfile = True
-for f in filelist[:20]:
+for f in filelist[:100]:
     df = pd.read_csv(f'{BARS1_DIRECTORY}/{f}')
     xyf = createXY(df)
 
@@ -113,10 +113,4 @@ for f in filelist[:20]:
         xyf.to_csv(all_file, mode='a', index=False, header=False)
         
 print('DONE')
-
-
-# In[ ]:
-
-
-
 

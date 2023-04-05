@@ -61,8 +61,16 @@ def calcTransformedLastBar(df:pd.DataFrame):
     for col in shifted_hlc_columns:
         xf[col + 'h'] = 1000 * (xf[col] / xf['hwap'] - 1)
     xf.drop(shifted_hlc_columns, axis=1, inplace=True) 
-    xf.drop('hwap', axis=1, inplace=True)  
+    # xf.drop('hwap', axis=1, inplace=True)  
     return xf.iloc[[-1]]
+
+def trueHigh(highC:float, close:float):
+    true_high = (highC / 1000 + 1) * close
+    return true_high
+
+def trueLow(lowC:float, close:float):
+    true_low = (lowC / 1000 + 1) * close
+    return true_low
 
 
 def main():
@@ -73,19 +81,25 @@ def main():
     
     status = Status()
     
-    for index, row in pd.read_csv("/Users/ljp2/Alpaca/Data/bars1/20211008.csv").iterrows():
+    for index, bar in pd.read_csv("/Users/ljp2/Alpaca/Data/bars1/20211008.csv").iterrows():
         if index == 0:
-            df = row.to_frame().T
+            df = bar.to_frame().T
         else:
-            df.loc[len(df)] = row
+            df.loc[len(df)] = bar
 
         if index < 45: continue
 
         if status.position == 0:
-            bar = calcTransformedLastBar(df).astype(float)
-            phigh = xgbH.predict(bar)
-            plow = xgbL.predict(bar)
-            print(phigh, plow)
+            transformed_bar = calcTransformedLastBar(df).astype(float)
+            calc_bar = transformed_bar.drop('hwap', axis=1)
+            highC = xgbH.predict(calc_bar)[0]
+            true_high = trueHigh(highC, bar.close)
+            
+            lowC = xgbL.predict(calc_bar)[0]
+            true_low = trueLow(lowC, bar.close)
+            
+            print(f'{true_high-bar.close}\t{bar.close}\t{true_low-bar.close}')
+            
             pass
 
         else:
