@@ -81,7 +81,7 @@ def main():
     
     status = Status()
     
-    for index, bar in pd.read_csv("/Users/ljp2/Alpaca/Data/bars1/20211008.csv").iterrows():
+    for index, bar in pd.read_csv("C:/Alpaca/Data/bars1/20230405.csv").iterrows():
         if index == 0:
             df = bar.to_frame().T
         else:
