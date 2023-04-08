@@ -15,7 +15,7 @@ def getBarsDirectory():
 
 def getAllFileDirectory():
     if os.name == "nt":
-        ALL_FILE_DIRECTORY = "C:/Alpaca/Data/"
+        ALL_FILE_DIRECTORY = "C:/Alpaca/Data"
     else:
         ALL_FILE_DIRECTORY = "/Users/ljp2/Alpaca/Data"
     return ALL_FILE_DIRECTORY
